@@ -43,9 +43,9 @@ public class Product {
     @Column(name = "units_in_stock")
     private int unitsInStock;
 
-    @Column(name = "date_created_utc")
+    @Column(name = "date_created")
     private Instant dateCreatedUtc;
 
-    @Column(name = "last_updated_utc")
+    @Column(name = "last_updated")
     private Instant lastUpdatedUtc;
 }
