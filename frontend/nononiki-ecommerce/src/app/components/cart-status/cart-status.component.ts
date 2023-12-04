@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CartService } from 'src/app/services/cart.service';
 
 @Component({
   selector: 'app-cart-status',
@@ -6,5 +7,26 @@ import { Component } from '@angular/core';
   styleUrls: ['./cart-status.component.css']
 })
 export class CartStatusComponent {
+
+  totalPrice: number = 0.00;
+  totalQuantity: number = 0;
+
+  constructor(private cartService: CartService) {}
+
+  ngOnInit(): void {
+    this.updateCartStatus();
+  }
+
+  updateCartStatus() {
+    // Subscribe to the Cart totalPrice
+    this.cartService.totalPrice.subscribe(
+      data => this.totalPrice = data
+    );
+
+    // Subscribe to the Cart totalQuantity
+    this.cartService.totalQuantity.subscribe(
+      data => this.totalQuantity = data
+    );
+  }
 
 }
