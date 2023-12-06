@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 })
 export class SearchComponent {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   doSearch(value: string) {
     console.log(`value=${value}`);

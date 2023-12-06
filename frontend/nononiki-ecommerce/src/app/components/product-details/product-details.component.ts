@@ -12,11 +12,11 @@ import { ProductService } from 'src/app/services/product.service';
 })
 export class ProductDetailsComponent {
 
-  product : Product = {} as Product;
+  product: Product = {} as Product;
 
   constructor(private productService: ProductService,
-              private cartService: CartService,
-              private route: ActivatedRoute) {}
+    private cartService: CartService,
+    private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(() => {

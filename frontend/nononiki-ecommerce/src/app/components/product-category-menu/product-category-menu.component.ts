@@ -11,7 +11,7 @@ export class ProductCategoryMenuComponent {
 
   productCategories: ProductCategory[] = [];
 
-  constructor(private productService: ProductService){}
+  constructor(private productService: ProductService) { }
 
   ngOnInit() {
     this.listProductCategories();
