@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Country } from 'src/app/common/country';
+import { State } from 'src/app/common/state';
 import { NonoNikiShopFormService } from 'src/app/services/nono-niki-shop-form.service';
 
 @Component({
@@ -16,8 +18,12 @@ export class CheckoutComponent implements OnInit {
   creditCardYears: number[] = [];
   creditCardMonths: number[] = [];
 
+  countries: Country[] = [];
+  shippingAddressStates: State[] = [];
+  billingAddressStates: State[] = [];
+
   constructor(private formBuilder: FormBuilder,
-              private nonoNikiShopFormService: NonoNikiShopFormService) { }
+    private nonoNikiShopFormService: NonoNikiShopFormService) { }
 
   ngOnInit(): void {
     this.checkoutFormGroup = this.formBuilder.group({
@@ -62,9 +68,17 @@ export class CheckoutComponent implements OnInit {
 
     // Populate Credit Card years
     this.nonoNikiShopFormService.getCreditCardYears().subscribe(
-      data=> {
+      data => {
         console.log("Retrieved Credit Card years: " + JSON.stringify(data));
         this.creditCardYears = data;
+      }
+    )
+
+    // Populate Countries
+    this.nonoNikiShopFormService.getCountries().subscribe(
+      data => {
+        console.log("Retrieved Countries: " + JSON.stringify(data));
+        this.countries = data;
       }
     )
   }
@@ -73,9 +87,11 @@ export class CheckoutComponent implements OnInit {
     if (event.target.checked) {
       this.checkoutFormGroup.controls['billingAddress']
         .setValue(this.checkoutFormGroup.controls['shippingAddress'].value);
+      this.billingAddressStates = this.shippingAddressStates;
     }
     else {
       this.checkoutFormGroup.controls['billingAddress'].reset();
+      this.billingAddressStates = [];
     }
   }
 
@@ -83,6 +99,9 @@ export class CheckoutComponent implements OnInit {
     console.log("Handling the submit button.");
     console.log(this.checkoutFormGroup.get('customer').value);
     console.log("The email address is: " + this.checkoutFormGroup.get('customer').value.email);
+
+    console.log("The Shipping Address Country is: " + this.checkoutFormGroup.get('shippingAddress').value.country.name);
+    console.log("The Shipping Address State is: " + this.checkoutFormGroup.get('shippingAddress').value.state.name);
   }
 
   handleMonthsAndYears() {
@@ -106,5 +125,28 @@ export class CheckoutComponent implements OnInit {
         this.creditCardMonths = data;
       }
     )
+  }
+
+  getStates(formGroupName: string) {
+    const formGroup = this.checkoutFormGroup.get(formGroupName);
+    const countryCode = formGroup.value.country.code;
+    const countryName = formGroup.value.country.name;
+
+    console.log(`${formGroupName} country code: ${countryCode}`);
+    console.log(`${formGroupName} country name: ${countryName}`);
+
+    this.nonoNikiShopFormService.getStates(countryCode).subscribe(
+      data => {
+        if (formGroupName === 'shippingAddress') {
+          this.shippingAddressStates = data;
+        }
+        else {
+          this.billingAddressStates = data;
+        }
+        
+        // Select first item as default
+        formGroup.get('state').setValue(data[0]);
+      }
+    );
   }
 }
