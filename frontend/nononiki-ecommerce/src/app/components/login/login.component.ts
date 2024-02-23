@@ -13,7 +13,7 @@ export class LoginComponent {
 
   oktaSignin: any;
 
-  constructor(@Inject(OKTA_AUTH) private okta_auth: OktaAuth) {
+  constructor(@Inject(OKTA_AUTH) private oktaAuth: OktaAuth) {
 
     this.oktaSignin = new OktaSignIn({
       logo: 'assets/images/logo.png',
@@ -29,7 +29,18 @@ export class LoginComponent {
    }
 
    ngOnInit(): void {
-    
+    this.oktaSignin.remove();
+
+    this.oktaSignin.renderEl({
+      el: '#okta-sign-in-widget'}, // This name should be the same as the div tag id in login.component.html
+      (response: any) => {
+        if (response.status === 'SUCCESS') {
+          this.oktaAuth.signInWithRedirect();
+        }
+      },
+      (error: any) => {
+        throw error;
+      })
    }
 
 }
