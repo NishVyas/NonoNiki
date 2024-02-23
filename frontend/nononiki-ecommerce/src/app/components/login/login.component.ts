@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import myAppConfig from '../../config/my-app-config';
 import { OKTA_AUTH } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
@@ -9,7 +9,7 @@ import OktaSignIn from '@okta/okta-signin-widget';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
 
   oktaSignin: any;
 
@@ -20,19 +20,19 @@ export class LoginComponent {
       baseUrl: myAppConfig.oidc.issuer.split('/oauth2')[0],
       clientId: myAppConfig.oidc.clientId,
       redirectUri: myAppConfig.oidc.redirectUri,
+      useInteractionCodeFlow: true,
       authParams: {
         pkce: true,
         issuer: myAppConfig.oidc.issuer,
         scopes: myAppConfig.oidc.scopes
       }
     });
-   }
+  }
 
-   ngOnInit(): void {
-    this.oktaSignin.remove();
-
+  ngOnInit(): void {
     this.oktaSignin.renderEl({
-      el: '#okta-sign-in-widget'}, // This name should be the same as the div tag id in login.component.html
+      el: '#okta-sign-in-widget'
+    }, // This name should be the same as the div tag id in login.component.html
       (response: any) => {
         if (response.status === 'SUCCESS') {
           this.oktaAuth.signInWithRedirect();
@@ -41,6 +41,10 @@ export class LoginComponent {
       (error: any) => {
         throw error;
       })
-   }
+  }
+
+  ngOnDestroy(): void {
+    this.oktaSignin.remove();
+  }
 
 }
